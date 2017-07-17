@@ -1,7 +1,9 @@
-package com.morningstar.evilweather;
+package com.morningstar.evilweather.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.morningstar.evilweather.R;
 
 public class MainActivity extends AppCompatActivity {
 
