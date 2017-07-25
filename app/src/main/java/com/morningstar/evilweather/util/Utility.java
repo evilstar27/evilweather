@@ -1,6 +1,7 @@
 package com.morningstar.evilweather.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.morningstar.evilweather.db.City;
 import com.morningstar.evilweather.db.County;
@@ -28,6 +29,7 @@ public class Utility {
                     Province province = new Province();
                     province.setProvinceName(provinceObject.getString("name"));
                     province.setProvinceCode(provinceObject.getInt("id"));
+                    Log.i("evilweather","provinceName = " + provinceObject.getString("name") + " /provinceId = "+provinceObject.getInt("id"));
                     province.save();
                 }
                 return true;
@@ -51,6 +53,7 @@ public class Utility {
                     city.setCityName(cityObject.getString("name"));
                     city.setCityCode(cityObject.getInt("id"));
                     city.setProvinceId(provinceId);
+                    Log.i("evilweather","cityName = " + cityObject.getString("name") + " /cityId = "+cityObject.getInt("id") + " /provinceId = " + provinceId);
                     city.save();
                 }
                 return true;
@@ -74,6 +77,7 @@ public class Utility {
                     county.setCountyName(countyObject.getString("name"));
                     county.setWeatherId(countyObject.getString("weather_id"));
                     county.setCityId(cityId);
+                    Log.i("evilweather","countyName = " + countyObject.getString("name") + " /weatherId = "+ countyObject.getString("weather_id") + " /cityId = " + cityId);
                     county.save();
                 }
                 return true;
