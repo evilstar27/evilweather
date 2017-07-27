@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">EvilWeather</string>
+    <string name="weather_yubao">预报</string>
+    <string name="aqi_quality">空气质量</string>
+    <string name="aqi_index">AQI指数</string>
+    <string name="aqi_pm_index">PM2.5指数</string>
+    <string name="suggestion_life">生活建议</string>
 </resources>
