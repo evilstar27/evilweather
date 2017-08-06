@@ -5,10 +5,13 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -44,6 +47,10 @@ public class WeatherActivity extends AppCompatActivity {
     public SwipeRefreshLayout mSwipeRefresh;
 
     private String mWeatherId;
+
+    public DrawerLayout mDrawerLayout;
+
+    private Button mNavButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +89,12 @@ public class WeatherActivity extends AppCompatActivity {
         }else {
             loadBingPic();
         }
+        mNavButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
     }
 
     /**
@@ -129,7 +142,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气 id 请求城市天气信息
      * @param weatherId 天气 id
      */
-    private void requestWeather(String weatherId) {
+    public void requestWeather(String weatherId) {
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=2b5a6884508e43c3885293b7f217f8d1";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -220,5 +233,7 @@ public class WeatherActivity extends AppCompatActivity {
         mForecastLayout = (LinearLayout) findViewById(R.id.forecast_layout);
         mBingPic = (ImageView) findViewById(R.id.bing_piv_iv);
         mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mNavButton = (Button) findViewById(R.id.nav_button);
     }
 }
