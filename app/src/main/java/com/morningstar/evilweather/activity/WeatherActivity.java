@@ -1,16 +1,20 @@
 package com.morningstar.evilweather.activity;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.morningstar.evilweather.R;
 import com.morningstar.evilweather.gson.Forecast;
 import com.morningstar.evilweather.gson.Weather;
@@ -34,10 +38,15 @@ public class WeatherActivity extends AppCompatActivity {
 
     private LinearLayout mForecastLayout;
 
+    private ImageView mBingPic;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+
+        //设置透明状态栏
+        setToolBar();
 
         //初始化控件
         initViews();
@@ -54,6 +63,56 @@ public class WeatherActivity extends AppCompatActivity {
             mWeatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+
+        String bingPic = prefs.getString("bing_pic",null);
+        if(bingPic != null){
+            Glide.with(this).load(bingPic).into(mBingPic);
+        }else {
+            loadBingPic();
+        }
+    }
+
+    /**
+     * 设置状态栏
+     */
+    private void setToolBar() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setNavigationBarColor(Color.TRANSPARENT);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+    }
+
+    /**
+     * 加载必应每日一图
+     */
+    private void loadBingPic() {
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("bing_pic",bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bingPic).into(mBingPic);
+                    }
+                });
+            }
+        });
+
     }
 
     /**
@@ -93,6 +152,7 @@ public class WeatherActivity extends AppCompatActivity {
                 });
             }
         });
+        loadBingPic();
     }
 
     /**
@@ -146,5 +206,6 @@ public class WeatherActivity extends AppCompatActivity {
         mCarWashText = (TextView) findViewById(R.id.car_wash_text);
         mSportText = (TextView) findViewById(R.id.sport_text);
         mForecastLayout = (LinearLayout) findViewById(R.id.forecast_layout);
+        mBingPic = (ImageView) findViewById(R.id.bing_piv_iv);
     }
 }
