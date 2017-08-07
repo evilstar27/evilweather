@@ -1,5 +1,6 @@
 package com.morningstar.evilweather.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.morningstar.evilweather.R;
 import com.morningstar.evilweather.gson.Forecast;
 import com.morningstar.evilweather.gson.Weather;
+import com.morningstar.evilweather.service.AutoUpdateService;
 import com.morningstar.evilweather.util.HttpUtil;
 import com.morningstar.evilweather.util.Utility;
 
@@ -217,6 +219,8 @@ public class WeatherActivity extends AppCompatActivity {
         mCarWashText.setText(carWash);
         mSportText.setText(sport);
         mWeatherLayout.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     private void initViews() {
