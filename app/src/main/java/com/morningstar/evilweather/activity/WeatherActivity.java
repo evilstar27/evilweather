@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -48,8 +49,6 @@ public class WeatherActivity extends AppCompatActivity {
 
     public SwipeRefreshLayout mSwipeRefresh;
 
-    private String mWeatherId;
-
     public DrawerLayout mDrawerLayout;
 
     private Button mNavButton;
@@ -68,6 +67,7 @@ public class WeatherActivity extends AppCompatActivity {
         mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather",null);
+        final String mWeatherId;
         if(weatherString != null){
             //有缓存时直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
@@ -82,7 +82,10 @@ public class WeatherActivity extends AppCompatActivity {
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestWeather(mWeatherId);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String newId = prefs.getString("newId",null);
+                Log.i("evilweather","newId=" + newId);
+                requestWeather(newId);
             }
         });
         String bingPic = prefs.getString("bing_pic",null);
@@ -144,7 +147,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气 id 请求城市天气信息
      * @param weatherId 天气 id
      */
-    public void requestWeather(String weatherId) {
+    public void requestWeather(final String weatherId) {
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=2b5a6884508e43c3885293b7f217f8d1";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -153,7 +156,7 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(WeatherActivity.this, "获取天气信息失败",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WeatherActivity.this, "获取天气信息失败1",Toast.LENGTH_SHORT).show();
                         mSwipeRefresh.setRefreshing(false);
                     }
                 });
@@ -169,10 +172,11 @@ public class WeatherActivity extends AppCompatActivity {
                         if(weather != null && "ok".equals(weather.status)){
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather",responseText);
+                            editor.putString("newId",weather.basic.weatherId);
                             editor.apply();
                             showWeatherInfo(weather);
                         } else {
-                            Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(WeatherActivity.this,"获取天气信息失败2",Toast.LENGTH_SHORT).show();
                         }
                         mSwipeRefresh.setRefreshing(false);
                     }
